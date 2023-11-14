@@ -1,5 +1,12 @@
 package LifeCycle;
+import  Exception.LifecycleException;
 
+/**
+ * 类功能描述：生命周期管理
+ *
+ * @author new
+ * @date 2023/11/14
+ */
 public interface LifeCycle {
     /** 第1类：针对监听器 **/
     // 添加监听器
