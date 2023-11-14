@@ -1,22 +1,24 @@
-package Container.Server.ServerImpl;
+package Pipline;
 
-import Container.Server.Server;
-import Exception.LifecycleException;
 import JMX.LifecycleMBeanBase;
-import LifeCycle.LifecycleListener;
 import LifeCycle.LifecycleState;
+import LifeCycle.LifecycleListener;
+import Exception.LifecycleException;
 
-public class StanderServer extends LifecycleMBeanBase implements Server  {
+public class pipeline extends LifecycleMBeanBase {
+
 
     @Override
     protected String getDomainInternal() {
         return null;
     }
 
+
     @Override
     protected String getObjectNameKeyProperties() {
         return null;
     }
+
 
     @Override
     public void addLifecycleListener(LifecycleListener listener) {
@@ -26,11 +28,6 @@ public class StanderServer extends LifecycleMBeanBase implements Server  {
     @Override
     public LifecycleListener[] findLifecycleListeners() {
         return new LifecycleListener[0];
-    }
-
-    @Override
-    public void removeLifecycleListener(LifecycleListener listener) {
-
     }
 
     @Override
@@ -63,4 +60,8 @@ public class StanderServer extends LifecycleMBeanBase implements Server  {
         return null;
     }
 
+    @Override
+    public void removeLifecycleListener(LifecycleListener listener) {
+
+    }
 }

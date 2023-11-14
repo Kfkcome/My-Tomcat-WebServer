@@ -14,18 +14,7 @@ public final class Bootstrap
     private static MBeanServer mBeanServer ;
     private static final Object daemonLock = new Object();//守护进程锁
     private void init() throws MalformedObjectNameException {
-        ObjectName oname;
-        // get the default MBeanServer from Management Factory
 
-        mBeanServer = ManagementFactory.getPlatformMBeanServer ();
-        // try {
-        // create a instance of CentralHeaterImpl class
-
-
-        // assign a Object name to above instance
-        oname = new ObjectName( "MyHome:name=centralheater" );
-
-        // register the instance of CentralHeaterImpl to MBeanServer
 
 
     }
