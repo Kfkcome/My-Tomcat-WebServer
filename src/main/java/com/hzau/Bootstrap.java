@@ -22,10 +22,10 @@ import java.util.ArrayList;
  */
 public final class Bootstrap {
     private static final Object daemonLock = new Object();//守护进程锁
-    private final ArrayList<StanderServiceMBean> services = new ArrayList<>();
+    private final ArrayList<StanderService> services = new ArrayList<>();
 
     private void init() {
-        Document document = ParsersXML.getDocumentBuilder("src/main/resources/book.xml");
+        Document document = ParsersXML.getDocumentBuilder("src/main/resources/webserver.xml");
         NodeList servers = document.getElementsByTagName("service");
         for(int i=0;i<servers.getLength();i++){
             Node item = servers.item(i);
@@ -40,6 +40,15 @@ public final class Bootstrap {
         }
 
     }
+    private void start(){
+        for (StanderService service : services) {
+            try {
+                service.start();
+            } catch (LifecycleException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 
     public static void main(String[] args) throws NotCompliantMBeanException, InstanceAlreadyExistsException, MBeanRegistrationException, MalformedObjectNameException {
         synchronized (daemonLock)//守护进程锁保证唯一性
@@ -47,17 +56,12 @@ public final class Bootstrap {
 
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.init();
-            //规范 域名:name=MBean名称
-            ObjectName helloName = new ObjectName("jmxBean:name=456456,type=Hello");
-            ObjectName testname=new ObjectName("jmxBean:name=456456421");
-            //注册MBean
-            Registry.getRegistry().registerMBean(new Test(),testname);
-            Registry.getRegistry().registerMBean(new Hello(), helloName);
             ObjectName adapterName = new ObjectName("HelloAgent:name=htmladapter,port=8082");
             //端口号默认8082
             HtmlAdaptorServer adapter = new HtmlAdaptorServer();
             adapter.setPort(9000);
             Registry.getRegistry().registerMBean(adapter, adapterName);
+            bootstrap.start();
             adapter.start();
         }
     }

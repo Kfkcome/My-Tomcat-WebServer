@@ -1,0 +1,16 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<WebServer>
+    <service id="1">
+        <port id="1">80</port>
+        <port id="2">8083</port>
+        <corePoolSize>10</corePoolSize>
+        <maxiumSize>20</maxiumSize>
+        <keepAliveTime>5000</keepAliveTime>
+        <webapp>
+            <class>com.hzau.app.test</class>
+        </webapp>
+    </service>
+    <service id="2">
+        <port id="1">8089</port>
+    </service>
+</WebServer>

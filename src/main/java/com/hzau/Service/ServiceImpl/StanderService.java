@@ -2,6 +2,7 @@ package com.hzau.Service.ServiceImpl;
 
 
 import com.hzau.Connector.Connector;
+import com.hzau.Context.Context;
 import com.hzau.Exception.LifecycleException;
 import com.hzau.JMX.LifecycleMBeanBase;
 
@@ -13,7 +14,9 @@ import com.hzau.ThreadPool.StandardThreadExecutor;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.net.ServerSocket;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public class StanderService extends LifecycleMBeanBase implements StanderServiceMBean {
@@ -21,13 +24,15 @@ public class StanderService extends LifecycleMBeanBase implements StanderService
     NodeList serviceValue;
     ArrayList<Integer> port;
     ArrayList<Connector> connectors;
+    ArrayList<Context>contexts;
     StandardThreadExecutor standardThreadExecutor;
 
     public StanderService(int id, NodeList serviceValue) {
         this.id = id;
         this.serviceValue = serviceValue;
         port = new ArrayList<>();
-        connectors=new ArrayList<>();
+        connectors = new ArrayList<>();
+        contexts=new ArrayList<>();
     }
 
     @Override
@@ -77,6 +82,10 @@ public class StanderService extends LifecycleMBeanBase implements StanderService
                     maxiumSize = Integer.parseInt(nodeValue);
                 if (nodeName.equals("keepAliveTime"))
                     keepAliveTime = Integer.parseInt(nodeValue);
+                if (nodeName.equals("webapp")) {
+                    NodeList childNodes = item.getChildNodes();
+                    contexts.add(new Context(childNodes));
+                }
             }
         }
         standardThreadExecutor = new StandardThreadExecutor(corePoolSize, maxiumSize, keepAliveTime);
@@ -88,12 +97,30 @@ public class StanderService extends LifecycleMBeanBase implements StanderService
         for (Connector connector : connectors) {
             connector.init();
         }
+        for (Context context : contexts) {
+            context.init();
+        }
         setState(LifecycleState.INITIALIZED);
     }
 
     @Override
     public void start() throws LifecycleException {
+        for (Connector connector : connectors) {
 
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        connector.start();
+                    } catch (LifecycleException e) {
+                        Log.error("运行出错");
+                        throw new RuntimeException(e.getMessage());
+                    }
+                }
+            };
+            standardThreadExecutor.execute(r);
+            setState(LifecycleState.STARTED);
+        }
     }
 
     @Override
